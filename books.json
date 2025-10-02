@@ -1,0 +1,37 @@
+{
+    "1": {
+        "Title": "Python Programming",
+        "Author": "John Zelle",
+        "Genre": "",
+        "Year": 0,
+        "Copies": 3
+    },
+    "2": {
+        "Title": "Data Science Handbook",
+        "Author": "Jake VanderPlas",
+        "Genre": "",
+        "Year": 0,
+        "Copies": 2
+    },
+    "3": {
+        "Title": "Artificial Intelligence",
+        "Author": "Stuart Russell",
+        "Genre": "",
+        "Year": 0,
+        "Copies": 4
+    },
+    "4": {
+        "Title": "Think Like A Man",
+        "Author": "Aaron Pierre",
+        "Genre": "Motivational",
+        "Year": 2023,
+        "Copies": 4
+    },
+    "5": {
+        "Title": "The Agony of Motherhood",
+        "Author": "Chris Wood",
+        "Genre": "mystery",
+        "Year": 2003,
+        "Copies": 32
+    }
+}
