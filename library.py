@@ -14,7 +14,6 @@ class Book:
         self.__genre = genre
         self.__year = year
         self.__copies = copies
-        # Use an integer key for in-memory Book_log
         Book.Book_log.update({
             Book.id: {
                 'Title': self.__title,
@@ -26,7 +25,6 @@ class Book:
         })
         Book.Total_books += self.__copies
         Book.id += 1
-        # persist immediately
         Book.save_books()
 
     def __str__(self):
@@ -39,7 +37,6 @@ class Book:
 
     @classmethod
     def save_books(cls):
-        # JSON needs string keys; convert int keys to str for saving
         serializable = {str(k): v for k, v in cls.Book_log.items()}
         try:
             with open(cls.file_path, "w") as f:
@@ -56,19 +53,14 @@ class Book:
             try:
                 with open(cls.file_path, "r") as f:
                     data = json.load(f)
-                # handle if file contains a list or dict
                 if isinstance(data, dict):
-                    # convert keys back to ints when possible
                     normalized = {}
                     for k, v in data.items():
                         try:
                             ik = int(k)
                         except Exception:
-                            # if key isn't integer-like, ignore or assign new id
                             ik = cls.id
                             cls.id += 1
-                        # Ensure we have expected fields and consistent keys
-                        # Accept either lower-case keys or capitalized ones
                         title = v.get('Title') or v.get('title') or "Unknown"
                         author = v.get('Author') or v.get('author') or "Unknown"
                         genre = v.get('Genre') or v.get('genre') or ""
@@ -76,7 +68,6 @@ class Book:
                         copies = v.get('Copies')
                         if copies is None:
                             copies = v.get('copies', 0)
-                        # normalize into the expected shape
                         normalized[ik] = {
                             'Title': title,
                             'Author': author,
@@ -89,12 +80,10 @@ class Book:
                         cls.id = max(cls.Book_log.keys()) + 1
                         cls.Total_books = sum(int(b.get('Copies', 0) or 0) for b in cls.Book_log.values())
                 else:
-                    # unexpected format (list...), ignore file (start fresh)
                     cls.Book_log = {}
             except (json.JSONDecodeError, ValueError):
-                # corrupted file — ignore and start fresh
                 cls.Book_log = {}
-        # if file missing or empty, we leave Book_log empty; defaults will be added when viewing
+
 
 class Library:
     def add_book(self, title, author, genre, year, copies):
@@ -102,7 +91,6 @@ class Library:
 
     def view_books(self):
         if not Book.Book_log:
-            # add defaults only when viewing if file had nothing
             self._add_default_books_if_empty()
         if not Book.Book_log:
             print("No books available.")
@@ -215,7 +203,6 @@ class Library:
         books_to_delete = [key for key, value in Book.Book_log.items() if value['Title'].lower() == title.lower()]
         if books_to_delete:
             for book_id in books_to_delete:
-                # subtract copies from total
                 copies = Book.Book_log[book_id].get('Copies', 0)
                 try:
                     Book.Total_books -= int(copies)
@@ -254,11 +241,9 @@ class StudentRegistration:
             try:
                 with open(cls.file_path, "r") as f:
                     data = json.load(f)
-                # expect data to be {id: name}
                 for sid, name in data.items():
                     cls.registered_students[sid] = Member(name, sid)
             except (json.JSONDecodeError, ValueError):
-                # corrupted file -> start empty
                 cls.registered_students = {}
 
     @classmethod
@@ -368,7 +353,7 @@ class StudentRegistration:
                 cls.borrowed_books[student_id].remove(record)
                 Book.save_books()
                 today = datetime.today()
-                # record['Due'] stored as YYYY-MM-DD string
+              
                 try:
                     due_date = datetime.strptime(record['Due'], "%Y-%m-%d")
                 except Exception:
@@ -384,9 +369,9 @@ class StudentRegistration:
 
 # Library setup
 library = Library()
-# Load books from file (if any). Defaults are only added on view if file empty.
+
 Book.load_books()
-#
+
 
 # Load students
 StudentRegistration.load_students()
